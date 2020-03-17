@@ -37,7 +37,7 @@
             <div class="col-8 upload-data">
                 <h5 class="card-title-upload-data">Upload new data</h5>
                 <div class="div-color-upload-data"></div>
-                <p class="p-upload-data">Please upload the raw data as following in a CSV or XLSX format. This data indicates your independent variables. Where the data points are the points of measure. It can be time periods such as days, months, trial evaluations or categorical variables such as car branda, subjects or states.<a href="{% static "documents/test.xlsx" %}" download="Reporte2Mayo2010"> Click here to download a sample data
+                <p class="p-upload-data">Please upload the raw data in a CSV or XLSX format. This data indicates your independent variables. The data points can be time periods such as days, months, trial evaluations or categorical variables such as gender, subjects or states.<a href="{% static "documents/test.xlsx" %}" download="Reporte2Mayo2010"> Click here to download a sample data, please format your file equally.
 </a></p>
                 <div class="table-upload table-responsive" id="table-upload">                
                 </div>
@@ -47,13 +47,13 @@
                     <div class="dependent-variables">
                         <h5 class="card-title-upload-data">Define Conversion Metrics</h5>
                         <div class="div-color-upload-data"></div>
-                        <p class="p-upload-data">In this section you will be prompted to input your dependent variables as mathematical relationships of the independent variables. you can input up to 10. If you're going to construct a dependent variable which is constructed using both independent variables and another dependent variable, make sure to define the usable dependentvariable first.</p>
+                        <p class="p-upload-data">In this section you will be prompted to input your dependent variables as mathematical relationships of the independent variables. You can input up to 10. If you're going to construct a dependent variable which is constructed using both an independent variable and another dependent variable, make sure to define that first dependent variable before. </p>
                         <div class="card-button-dependent-variable"><a type="button" class="btn btn-primary buttondependent-variable" href="{% url "dependent_variable" %}">Click to define variables</a></div>
                     </div>
                     <div class="dependent-variables">
-                        <h5 class="card-title-upload-data">Set environment of chart</h5>
+                        <h5 class="card-title-upload-data">Set the chart dashboard</h5>
                         <div class="div-color-upload-data"></div>
-                        <p class="p-upload-data">Here you willbe abie to chose the variables you want in wich chart. Please consider the order of magnitude to do it adequately.</p>
+                        <p class="p-upload-data">Here you will be able to create the charts and assign variables to it. Please do consider the order of magnitude to do it adequately.</p>
                         <div class="card-button-dependent-variable"><a type="button" class="btn btn-primary buttondependent-variable" href="{% url "set_chart" %}" >Set chart</a></div>
                     </div>
             </div>
