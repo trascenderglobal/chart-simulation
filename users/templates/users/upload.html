@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Upload</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+  <div class="container">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header-upload">
+        <div class="div-button-upload">
+            <div class="select-file">
+                <h5 class="card-title-upload">Select a file</h5>
+                <div class="div-color-upload"></div>
+            </div>
+            <a target="" href="{% url "upload_new_data" %}"><i class="far fa-times-circle"></i></a>
+            <h6 class="card-subtitle mb-2 text-upload">Please upload the raw data as following in a CSV or XLS format. This data indicates your independent variables.</h6>
+            <div class="img-upload">
+            <form>
+                <div class="form-group">
+                    <label for="file-upload" class="subir">
+                        <img src="/static/img/xls.png" alt="" class="img-fluid">
+                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file" style='display: none;'/>
+                    </label>
+                    <label for="file-upload" class="subir">
+                        <img src="/static/img/csv.png" alt="" class="img-fluid">
+                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file" style='display: none;'/>
+                    </label>
+                </div>
+            </form>
+            </div>
+            <div class="card-button-upload"><button type="button" class="btn btn-primary button-upload" id="button_upload">Upload</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.3/jquery.csv.min.js"></script> -->
+
+  <script type="text/javascript" lang="javascript"
+  src="{% static "js/xlsx.full.min.js" %}"></script>
+
+  <script>
+    
+    $(document).ready(function() {
+
+      $('#button_upload').on('click', function (){
+        window.location = "http://localhost:8000/api/upload_new_data/"
+      })
+
+      // Escuchamos el evento 'change' del input donde cargamos el archivo
+      $(document).on('change', 'input[type=file]', function(e) {
+        // Obtenemos la ruta temporal mediante el evento
+        var TmpPath = URL.createObjectURL(e.target.files[0]);
+
+        // read Excel file and convert to json format using fetch
+      fetch(TmpPath).then(function (res) {
+        /* get the data as a Blob */
+        if (!res.ok) throw new Error("fetch failed");
+          return res.arrayBuffer();
+      })
+      .then(function (ab) {
+        /* parse the data when it is received */
+        var data = new Uint8Array(ab);
+        var workbook = XLSX.read(data, {
+        type: "array"
+      });
+
+        /* *****************************************************************
+        * DO SOMETHING WITH workbook: Converting Excel value to Json       *
+        ********************************************************************/
+        var first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook.Sheets[first_sheet_name];
+        var data = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        /************************ End of conversion ************************/
+        console.log(data);
+        var vars = []
+        var data_points = []
+        var matrix = {}
+        var aux_matrix = {}
+        var data_point = {}
+        var var_name = ''
+        var data_points_cont = 0      
+
+        
+
+        for(var index_data in data){
+          if(index_data == 0){
+            for(var index_data_points in data[index_data]){
+              data_points.push(data[index_data][index_data_points])
+            }
+
+          }else{
+
+            for(var index_vars in data[index_data]){
+              if(index_vars.substr(2,5)!='EMPTY'){
+                var_name = data[index_data][index_vars]
+                vars.push(var_name)
+
+              }else{
+                data_point[data_points[data_points_cont]] = data[index_data][index_vars]  
+                data_points_cont++              
+              }
+            }
+
+            matrix[var_name] = data_point
+            data_points_cont = 0
+            data_point = {}
+
+          }
+          
+        }    
+        
+        aux_matrix = matrix
+        console.log(vars)
+        console.log(data_points)
+        console.log(matrix)
+        sessionStorage.setItem('vars',JSON.stringify(vars));
+        sessionStorage.setItem('data_points',JSON.stringify(data_points));
+        sessionStorage.setItem('matrix',JSON.stringify(matrix)); 
+        sessionStorage.setItem('aux_matrix',JSON.stringify(aux_matrix));       
+      });
+       });
+
+    });
+    
+  </script>
+  
+
+</body>
+
+</html>

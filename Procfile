@@ -1,0 +1,1 @@
+web: gunicorn charts.wsgi:application --log-file -

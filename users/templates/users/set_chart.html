@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Dependent variable</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+  <div class="container">
+    <div class="card card-dependent-variable mx-auto mt-5">
+      <div class="card-header-welcome">
+        <h5 class="card-title-depentent-variable">Select relationship between variables to chart</h5>
+        <a target="" href="{% url "upload_new_data" %}"><i class="far fa-times-circle"></i></a>
+      </div>
+      <div class="card-body">
+            <div id="main">
+                <div class="select-chart-type">
+                    <p class="paragraph-select-chart">Please select the of chart and place the variables on it separated by commas. Variables in a chart should have the same magnitude order, for example, %s together, $ spent together n millon of dollars, etc.</p>
+                    <div class="input-contador">
+                        <button class="btn" type="button" id="less" onclick="javascript: counterless()">-</button>
+                        <input id="quantity" type="text" style="text-align: center;" value="0">
+                        <button class="btn" type="button" id="more" onclick="javascript: countermore()">+</button>
+                    </div>
+                </div>
+                <div id="cont5"></div>
+            </div>  
+            <div class="div-button-select-chart-type">
+                <div class="card-button"><a type="button" class="btn btn-primary button-select-chart-type" onclick="save_charts()">Done</a></div>
+            </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+    <script src="{% static "js/main.js" %}"></script>
+
+</body>
+
+</html>
