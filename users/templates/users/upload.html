@@ -17,6 +17,77 @@
 
   <!-- Custom styles for this template-->
   <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+<style>
+.fileUploadInput {
+  display: grid;
+  grid-gap: 10px;
+  position: relative;
+  z-index: 1; }
+  
+  .fileUploadInput label {
+    display: flex;
+    align-items: center;
+    color: setColor(primary, 0.5);
+    background: setColor(white);
+    transition: .4s ease;
+    font-family: arial, sans-serif;
+    font-size: .75em;
+    font-weight: regular; }
+    
+  .fileUploadInput input {
+    position: relative;
+    z-index: 1;
+    padding: 0 gap(m);
+    width: 100%;
+    height: 50px;
+    border: 1px solid #323262;
+    border-radius: 3px;
+    font-family: arial, sans-serif;
+    font-size: 1rem;
+    font-weight: regular; }
+    .fileUploadInput input[type="file"] {
+      padding: 0 gap(m); }
+      .fileUploadInput input[type="file"]::-webkit-file-upload-button {
+        visibility: hidden;
+        margin-left: 10px;
+        padding: 0;
+        height: 50px;
+        width: 0; }
+        
+  .fileUploadInput button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 50px;
+    height: 50px;
+    line-height: 0;
+    user-select: none;
+    color: white;
+    background-color: #323262;
+    border-radius: 0 3px 3px 0;
+    font-family: arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 800; }
+    .fileUploadInput button svg {
+      width: auto;
+      height: 50%; }
+
+
+ 
+ .container {
+  padding: 25px;
+  border: 1px solid #eaeaea;
+  border-radius: 3px;
+  background: white; }
+
+@-moz-document url-prefix() {
+.fileUploadInput button{
+    display: none
+}
+}
+
+</style>
+ 
 
 </head>
 
@@ -35,18 +106,28 @@
             <div class="img-upload">
             <form>
                 <div class="form-group">
-                    <label for="file-upload" class="subir">
-                        <img src="/static/img/xls.png" alt="" class="img-fluid">
-                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file" style='display: none;'/>
+                   <!-- <label for="file-upload" class="subir">
+                      
+                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file"  id="submit_button"/>
                     </label>
                     <label for="file-upload" class="subir">
-                        <img src="/static/img/csv.png" alt="" class="img-fluid">
-                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file" style='display: none;'/>
+                        
+                        <input id="file-upload" name="file-upload" accept=".xlsx, .csv" type="file" style='display: none;' id="submit_button"/>
                     </label>
+-->
                 </div>
+
+                <div class="container">
+                <div class="fileUploadInput">
+                  <label>✨ <img src="/static/img/xls.png" alt="" class="img-fluid" > <img src="/static/img/csv.png" alt="" class="img-fluid"> Upload this kind of file only</label>
+                  <input type="file"  accept = '.xlsx, .csv' />
+                  <button>+</button>
+                </div>
+</div>
+            
             </form>
             </div>
-            <div class="card-button-upload"><button type="button" class="btn btn-primary button-upload" id="button_upload">Upload</button></div>
+            <div class="card-button-upload"><button type="button" class="btn btn-primary button-upload" id="button_upload">Upload this file</button></div>
         </div>
       </div>
     </div>
@@ -89,6 +170,10 @@
         var workbook = XLSX.read(data, {
         type: "array"
       });
+
+
+
+
 
         /* *****************************************************************
         * DO SOMETHING WITH workbook: Converting Excel value to Json       *
