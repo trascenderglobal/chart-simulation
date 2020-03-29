@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Modify variable</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+  <div class="container">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header-upload-2">
+        <div class="div-button-upload">
+            <div class="upload-data">
+                <h5 class="card-title-upload-data">Upload new data</h5>
+                <div class="div-color-upload-data"></div>
+                <a target="" href="{% url "select_chart_teacher" %}"><i class="far fa-times-circle fa-modify"></i></a>
+                <p class="p-modify-data">Please upload the raw data as following in a CSV or XLSX format. This data indicates your independent variables.</p>
+                <div class="table-upload" id="table-upload">                
+                </div>
+                <p class="p-upload-data">Where the data points are the points of measure. It can be time periods such as days, months, trial evaluations or categorical variables such as car branda, subjects or states. Click here to download a sample data</p>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+<script>
+  $( document ).ready(function() {
+    var data_points = JSON.parse(sessionStorage.getItem('data_points'))
+    var matrix = JSON.parse(sessionStorage.getItem('matrix'))
+    var vars = JSON.parse(sessionStorage.getItem('vars'))
+    var vars_dependents = JSON.parse(sessionStorage.getItem('vars_dependents'))
+    var charts = JSON.parse(sessionStorage.getItem('charts'))
+    console.log(data_points)
+    console.log(vars)
+    console.log(matrix)
+    console.log(vars_dependents)
+    console.log(charts)
+    var html = '<table class="table table-borderless table-upload-data" id="dtHorizontalExample">'
+      html += '<tr>'
+      html += '<td>Variables</td>'
+    for(var index in data_points){    
+        
+      html += '<td>' + data_points[index] + '</td>' 
+      
+    }
+    html += '</tr>'
+
+    for(var index_vars in vars){      
+      html += '<tr>'
+      html += '<td>' + vars[index_vars] + '</td>'   
+      for(var index_data in matrix[vars[index_vars]]){
+        html += '<td>' + matrix[vars[index_vars]][index_data] + '</td>'
+      } 
+     
+      html += '</tr>'
+    }
+    html += '</table>'
+    $('#table-upload').html(html)
+  });
+    $('table').on('scroll', function () {
+        $("table > *").width($("table").width() + $("table").scrollLeft());
+    });
+</script>
+</body>
+
+</html>

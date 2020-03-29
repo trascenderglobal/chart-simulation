@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Dependent variable</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+  <div class="container-fluid">
+    <div class="card card-dependent-variable mx-auto mt-5">
+      <div class="card-header-welcome">
+        <h5 class="input-title-depentent-variable">Input Conversion Metrics</h5>
+        <a target="" href="{% url "upload_new_data" %}"><i class="far fa-times-circle"></i></a>
+      </div>
+      <div class="card-body">
+            <div id="main">
+                <div class="select-charts-dependent-variable">
+                    <h6 class="select-dependent-variable">Select number of convertion metrics</h6>
+                    <div class="input-contador">
+                        <button class="btn" type="button" id="less" onclick="javascript: decrease()">-</button>
+                        <input id="quantity" type="text" style="text-align: center;" value="0">
+                        <button class="btn" type="button" id="more" onclick="javascript: increase()">+</button>
+                    </div>
+                </div>
+                <div id="cont5"></div>
+                <p class="paragraph-select-chart">*Introduce the fórmula using the independent variable exact header names and using mathematical symbols. You can use standard Excel fórmulas such as MAX, MIN, AVERAGE and so on. n mas =10</p>
+
+            </div>  
+            <div class="div-button-select-chart-type">
+                <div class="card-button"><a type="button" class="btn btn-primary button-select-chart-type" onclick="save_vars_dependents()">Done</a></div>
+            </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+    <script src="{% static "js/dependent_variable.js" %}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Upload new data</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+  <div class="container-fluid">
+    <div class="mx-auto mt-5 select-chart-student">
+      <div class="col-1 col-white">
+        <div class="dropdown">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="/static/img/cog.png" alt="" class="img-fluid"> 
+          </button>
+          <div class="dropdown-menu">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Decimals
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">0</a>
+                <a class="dropdown-item" href="#">1</a>
+                <a class="dropdown-item" href="#">2</a>
+            </div>
+            <!-- <a class="dropdown-item" href="#">Config 2</a>
+            <a class="dropdown-item" href="#">Config 3</a> -->
+          </div>
+        </div>
+      </div>
+      <div class="col-11 col-grey">
+        <div class="upload-content">
+            <div class="col-8 upload-data">
+                <h5 class="card-title-upload-data">Upload new data</h5>
+                <div class="div-color-upload-data"></div>
+                <p class="p-upload-data">Please upload the raw data in a CSV or XLSX format. This data indicates your independent variables. The data points can be time periods such as days, months, trial evaluations or categorical variables such as gender, subjects or states.<a href="{% static "documents/test.xlsx" %}" download="Reporte2Mayo2010"> Click here to download a sample data, please format your file equally.
+</a></p>
+                <div class="table-upload table-responsive" id="table-upload">                
+                </div>
+                <div class="card-button-upload-data"><a type="button" class="btn btn-primary btn-sm button-upload-data" href="{% url "upload" %}">Browse and upload your data</a></div>
+            </div>
+            <div class="col-4 variables">
+                    <div class="dependent-variables">
+                        <h5 class="card-title-upload-data">Define Conversion Metrics</h5>
+                        <div class="div-color-upload-data"></div>
+                        <p class="p-upload-data">In this section you will be prompted to input your dependent variables as mathematical relationships of the independent variables. You can input up to 10. If you're going to construct a dependent variable which is constructed using both an independent variable and another dependent variable, make sure to define that first dependent variable before. </p>
+                        <div class="card-button-dependent-variable"><a type="button" class="btn btn-primary buttondependent-variable" href="{% url "dependent_variable" %}">Click to define variables</a></div>
+                    </div>
+                    <div class="dependent-variables">
+                        <h5 class="card-title-upload-data">Set the chart dashboard</h5>
+                        <div class="div-color-upload-data"></div>
+                        <p class="p-upload-data">Here you will be able to create the charts and assign variables to it. Please do consider the order of magnitude to do it adequately.</p>
+                        <div class="card-button-dependent-variable"><a type="button" class="btn btn-primary buttondependent-variable" href="{% url "set_chart" %}" >Set chart</a></div>
+                    </div>
+            </div>
+        </div>
+        <div class="div-button-continue">
+            <div class="card-button-select-chart"><a type="button" class="btn btn-primary button-select-chart" href="{% url "select_chart_teacher" %}">Continue</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+
+</body>
+
+</html>
+
+
+<script>
+  $( document ).ready(function() {
+    var data_points = JSON.parse(sessionStorage.getItem('data_points'))
+    var matrix = JSON.parse(sessionStorage.getItem('matrix'))
+    var aux_matrix = JSON.parse(sessionStorage.getItem('aux_matrix'))
+    var vars = JSON.parse(sessionStorage.getItem('vars'))
+    var vars_dependents = JSON.parse(sessionStorage.getItem('vars_dependents'))
+    var charts = JSON.parse(sessionStorage.getItem('charts'))
+    var array_relations = JSON.parse(sessionStorage.getItem('array_relations'))
+    console.log(data_points)
+    console.log(vars)
+    console.log(matrix)    
+    console.log(aux_matrix)
+    console.log(vars_dependents)
+    console.log(charts)
+    console.log(array_relations)
+    var html = '<table class="table table-borderless table-upload-data" id="dtHorizontalExample">'
+      html += '<tr>'
+      html += '<td>Variables</td>'
+    for(var index in data_points){    
+        
+      html += '<td>' + data_points[index] + '</td>' 
+      
+    }
+    html += '</tr>'
+
+    for(var index_vars in vars){      
+      html += '<tr>'
+      html += '<td>' + vars[index_vars] + '</td>'   
+      for(var index_data in matrix[vars[index_vars]]){
+        html += '<td>' + matrix[vars[index_vars]][index_data] + '</td>'
+      } 
+     
+      html += '</tr>'
+    }
+    html += '</table>'
+    $('#table-upload').html(html)
+  });
+    $('table').on('scroll', function () {
+        $("table > *").width($("table").width() + $("table").scrollLeft());
+    });
+</script>

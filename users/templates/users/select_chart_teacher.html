@@ -1,0 +1,655 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Select chart</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+ 
+
+    
+    <script src="{% static "js/Chart.js" %}"></script>
+    
+    
+    <script src="{% static "js/chartjs-dragdata.min.js" %}"></script>
+    
+    
+
+    <style>
+        {
+            % comment %
+        }
+
+        canvas {
+            background-color: #eee;
+            position: relative;
+        }
+
+            {
+            % endcomment %
+        }
+    </style>
+
+</head>
+
+<body class="bg-dark">
+    <div class="container-chart">
+        <div class="select-chart-student">
+            <div class="col-12 col-grey-2">
+                <div class="select-chart-title">
+                    <h5 class="card-title">Select a chart and...</h5>
+                    <div class="select-chart-button">
+                        <div class="card-button"><a type="button" class="btn btn-primary button-select"
+                                href="{% url "chart_type" %}">Change chart type</a></div>
+                        <div class="card-button"><a type="button" class="btn btn-primary button-select"
+                                href="{% url "modify_variable" %}">View data</a></div>
+                        <div class="card-button"><a type="button" class="btn btn-primary button-select"
+                                href="{% url "set_chart" %}">Edit chart variables</a></div>
+                        
+                        
+                        <div class="modal fade" id="modal_select_var" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Select Variable</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="modal-body">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="done" class="btn btn-secondary modal-btn" data-dismiss="modal">Done</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts col-12" id="charting">
+
+                </div>
+                <div class="form-check pull-left">                        
+                    <input type="checkbox" name="keep_metric" id="keep_metric" class="form-check-input">          
+                    <label class="form-check-label" for="keep_metric">Keep conversion metric constant</label>              
+                </div>
+                <div class="div-button-save-chart">
+                    <a class="btn img-logout" href="{% url "upload_new_data" %}">  
+                        <img src="/static/img/logout.png" alt="" class="img-fluid icon-chart">   
+                    </a>
+                    <div class="card-button-select-chart">    
+                        <button type="button" id="reset" class="btn btn-primary modal-btn">Reset</button>                    
+                        <button type="button" class="btn btn-primary button-select-chart">Save</button>                            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+    <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+
+
+    <script>
+
+        $(document).ready(function () {     
+                  
+            var charts = JSON.parse(sessionStorage.getItem('charts'))
+            var data_points = JSON.parse(sessionStorage.getItem('data_points'))
+            var vars_dependents = JSON.parse(sessionStorage.getItem('vars_dependents'))
+            var matrix = JSON.parse(sessionStorage.getItem('matrix'))
+            var aux_matrix = JSON.parse(sessionStorage.getItem('aux_matrix'))
+            var array_relations = JSON.parse(sessionStorage.getItem('array_relations'))
+            var vars = JSON.parse(sessionStorage.getItem('vars'))
+            var aux_m = JSON.parse(sessionStorage.getItem('array_relations'))
+
+            var opt = {}
+            var labels = []
+            var array_options = []
+            var type_chart = ''
+            var ctx = ''
+            var el = ''
+            var cont = 0
+            var datasets = []
+            var data = []
+            var variables = []
+            var cont_dataset = 0
+            var max = 0
+            var min = 0
+            var html = ''
+            var color = ''
+            var colors = []
+            var select = []
+            var operations = []
+
+            var match = /[A-Za-z]+/g
+            var match_result =  /[^\[|\]]+/g
+            var form = ''
+            var vars_array = []
+            var is_dependent = false
+
+            var vars_selected = []
+            var new_unknown = ''
+
+            var unknow = []
+           
+
+            console.log(matrix)
+            console.log(array_relations)
+            console.log(charts)
+            console.log(vars_dependents)
+            console.log(data_points)
+
+            var recalculate = function(datapoint){
+               for (var index_dependents in vars_dependents){
+
+                    exist = vars_selected.indexOf(vars_dependents[index_dependents][0])
+
+
+                    if(exist == -1 && exist != vars_selected.length-1 ){
+
+                        console.log(vars_dependents[index_dependents][1])
+                        form = vars_dependents[index_dependents][1]
+                        vars_array = vars_dependents[index_dependents][1].match(match)
+                        for(var index_vars in vars_array){                                                        
+                            form = form.replace(new RegExp(vars_array[index_vars],'gi'),matrix[vars_array[index_vars]][datapoint])
+                        }
+                           console.log(form)
+                        matrix[vars_dependents[index_dependents][0]][datapoint] = eval(form)
+                        console.log(matrix[vars_dependents[index_dependents][0]][datapoint])
+
+                    }
+                }
+
+                return 0
+            }
+
+            var calc_keeping_metrics = function(){
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/calc_keeping_metric',
+                    data: {
+                       'operations' : JSON.stringify(operations),
+                       'matrix' : JSON.stringify(matrix)  
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        matrix = data.matrix
+                        console.log(matrix)
+                        for(var index_operations in operations){
+                            // console.log(matrix[operations[index_operations][0]][operations[index_operations][2]])
+                            aux = matrix[operations[index_operations][0]][operations[index_operations][2]]
+                            // console.log(aux)
+                            matrix[operations[index_operations][0]][operations[index_operations][2]] = eval(aux)
+                        }
+                        recalculate(operations[0][2])
+                        sessionStorage.setItem('vars_dependents',JSON.stringify(vars_dependents))
+                        sessionStorage.setItem('matrix',JSON.stringify(matrix))
+                        location.reload()
+                        
+                    }
+                });
+
+            }
+
+            var calculate = function(){
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/recalculate',
+                    data: {
+                       'operations' : JSON.stringify(operations),
+                       'matrix' : JSON.stringify(matrix)
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        matrix = data.matrix
+                        console.log('calculó')
+                        console.log(operations)
+                        for(var index_operations in operations){
+                            console.log(matrix[operations[index_operations][0]][operations[index_operations][2]])
+                            aux = matrix[operations[index_operations][0]][operations[index_operations][2]].match(match_result)[0]
+                            console.log(aux)
+                            matrix[operations[index_operations][0]][operations[index_operations][2]] = eval(aux)
+                        }
+                        sessionStorage.setItem('vars_dependents',JSON.stringify(vars_dependents))
+                        sessionStorage.setItem('matrix',JSON.stringify(matrix))
+                        location.reload()
+                        
+                    }
+                }); 
+            }
+            
+
+            var get_select = function(variable){
+
+                console.log('Recursivo')
+                console.log(aux_m)
+                var cont_relations = 0
+
+                for( var index in aux_m[variable]){
+
+                    if(aux_m[variable][index] == 1){
+
+                        aux_m[variable][index] = 0
+                        select.push(index)
+
+                            for(var x in aux_m){
+
+                                cont_relations++
+                                if(aux_m[x][index] == 1){
+                                    get_select(x)
+                                }
+
+                                if(cont_relations == vars.length){
+                                    return 0
+                                }
+                                
+                            }
+                        }
+                    }
+
+                }
+
+            for (var chart in charts) {
+
+                html += '<div class="col-6">'
+                html += '<canvas id="chart' + chart + '"></canvas>'
+                html += '</div>'
+
+            }
+
+            $('#charting').html(html)
+
+            for (var index_label in data_points) {
+                labels.push(data_points[index_label])
+            }
+
+            for (var index_chart in charts) {
+
+                max = 0
+                min = 0
+
+                variable = charts[index_chart][1].split(',')
+
+                for (var variable_index in variable) {  
+
+                    color = charts[index_chart][3][variable_index]                    
+
+                    for (var matrix_index in matrix[variable[variable_index]]) {  
+
+                            data.push(matrix[variable[variable_index]][matrix_index])
+                            colors.push(color)
+
+                            if (max < matrix[variable[variable_index]][matrix_index])
+                                max = matrix[variable[variable_index]][matrix_index]
+
+                            if(min > matrix[variable[variable_index]][matrix_index])
+                                min = matrix[variable[variable_index]][matrix_index]
+
+                    }
+                    if(charts[index_chart][0]=='line'){
+
+                        datasets[variable_index] = {
+                            label: variable[variable_index],
+                            data: data,
+                            pointHitRadius: 25,
+                            fill: false,
+                            borderWidth: 3,
+                            backgroundColor: colors,
+                            borderColor: color,
+                            pointBackgroundColor: color,
+                            tension: 0
+                        }
+                        
+                    }else{
+
+                        datasets[variable_index] = {
+                            label: variable[variable_index],
+                            data: data,
+                            pointHitRadius: 25,
+                            fill: false,
+                            borderWidth: 1,
+                            backgroundColor: colors,
+                            borderColor: colors,
+                        }
+
+                    }
+                    data = []
+                    colors = []                  
+
+                }
+                opt = {
+                    type: charts[index_chart][0],
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    reverse: false,
+                                    min: min,
+                                    max: max
+                                }
+                            }]
+                        },
+                        title: {
+                            display: true,
+                            text: charts[index_chart][2],
+                        },
+                        dragData: true,
+                        onDragEnd: function (e, datasetIndex, index, value) {
+
+                            console.log(datasetIndex, index, value)                         
+                            
+                            
+                            chart_clicked = charts[e.target.id.substr(5)]
+                            var_clicked = chart_clicked[1].split(',')[datasetIndex]
+
+                            
+                            matrix[var_clicked][data_points[index]] = value
+
+                            console.log(var_clicked+'/'+data_points[index]+'<----->'+matrix[var_clicked][index])
+                            console.log($('#keep_metric').val())
+                            
+                            for(var index_dependents in vars_dependents){
+                                if(vars_dependents[index_dependents][0]==var_clicked){
+                                    is_dependent = true
+                                    
+                                    vars_array = vars_dependents[index_dependents][1].match(match)
+                                        
+                                    select_var_html =  '<select id="select_independent">'
+                                    select_var_html += '<option selected disabled>Select a Variable</option>'
+
+                                    for(var index_vars in vars_array){
+
+                                        select_var_html+= '<option value = "'+vars_array[index_vars]+'">'+vars_array[index_vars]+'</option>'
+
+                                    }
+
+                                    select_var_html += '</select>'
+
+                                    $('#modal-body').html(select_var_html)
+                                    $("#modal_select_var").modal('show')
+                                    break
+                                }
+                            }
+
+                            if(is_dependent == false){
+                                if($('#keep_metric').prop('checked')){
+
+                                    // aux_m = array_relations 
+                                    // console.log(aux_m)
+                                    // get_select(var_clicked) //get_select
+                                    // console.log(select)
+
+                                    select_var_html = '<input placeholder="Select a Variable to keep constant" type="text" id="vars_selected" style="position:relative;width:100%"/><br><br>'
+                                    select_var_html += '<select id="select_keep_metric" style="position:relative;width:100%" multiple>'
+
+                                    for(var index_vars in vars_dependents){
+
+                                        vars_array = vars_dependents[index_vars][1].match(match)
+
+                                        select_var_html+= '<option value = "'+vars_dependents[index_vars][0]+'">'+vars_dependents[index_vars][0]+'</option>'
+                                        
+                                        // exist = vars_array.indexOf(var_clicked)
+
+                                        // if(exist > -1){
+                                        //     select_var_html+= '<option value = "'+vars_dependents[index_vars][0]+'">'+vars_dependents[index_vars][0]+'</option>'
+                                        // }
+                                    }                                    
+
+                                    select_var_html += '</select>'
+
+                                    $('#modal-body').html(select_var_html)
+                                    $("#modal_select_var").modal('show')
+                                    
+                                }else{
+
+                                    for(var index_dependents in vars_dependents){
+
+                                        form = vars_dependents[index_dependents][1]
+                                        vars_array = vars_dependents[index_dependents][1].match(match)
+                                        console.log(vars_array)
+                                        exist = vars_array.indexOf(var_clicked)
+
+                                        if(exist > -1){                                            
+                                            for(var index_vars in vars_array){
+                                                form = form.replace(new RegExp(vars_array[index_vars],'gi'),matrix[vars_array[index_vars]][data_points[index]])
+                                            }
+                                            form += '-x'
+                                            operations.push([vars_dependents[index_dependents][0],form,data_points[index]])
+                                        }
+
+                                    }
+                                    
+                                    calculate()
+                                    //location.reload()
+                                }
+                            }
+
+                            console.log(operations)
+
+                            $("#select_independent").on('change',function(){
+
+                                for(var index_vars in vars_dependents){
+                                    if(vars_dependents[index_vars][0] == var_clicked){
+
+                                        form = vars_dependents[index_dependents][1]
+                                        form = form.replace(new RegExp($('#select_independent').val(),'gi'),'x')
+                                        vars_array = vars_dependents[index_dependents][1].match(match)
+
+                                        for(var index_vars in vars_array){
+                                            form = form.replace(new RegExp(vars_array[index_vars],'gi'),matrix[vars_array[index_vars]][data_points[index]])
+                                        }
+                                        form += '-'+value.toFixed(2)
+                                        operations.push([$('#select_independent').val(),form,data_points[index]])
+
+                                    }
+                                }
+
+                                console.log(operations)
+                                calculate()
+                            })
+
+                            $('#select_keep_metric').on('change', function() {
+                                $('#vars_selected').val($('#vars_selected').val()+$('#select_keep_metric').val()+',')
+                                console.log($('#select_keep_metric').val())
+                            })
+
+                            $("#done").on('click',function(){ 
+
+                                vars_selected = $('#vars_selected').val().split(',')
+                                new_unknown = ''
+                                unknow = []
+                                var vars_operation = []
+                                var cont_unknow = 0
+
+                                for(var index_dependents in vars_dependents){
+
+                                    exist = vars_selected.indexOf(vars_dependents[index_dependents][0])
+
+                                    if(exist > -1){
+                                        console.log(vars_dependents[index_dependents][1])
+                                        form = vars_dependents[index_dependents][1]
+                                        vars_array = vars_dependents[index_dependents][1].match(match)
+                                        new_unknown = ''
+
+                                        exist2 = vars_array.indexOf(var_clicked)
+
+                                        if(exist2 > -1){
+                                      
+                                            for(var index_vars in vars_array){
+                                                if(vars_array[index_vars] != var_clicked){
+
+                                                        new_unknown = vars_array[index_vars]
+                                                        form = form.replace(new RegExp(vars_array[index_vars],'gi'),'x')
+                                                    
+                                                }else{
+                                                    vars_operation.push(vars_array[index_vars])
+                                                }
+                                            }
+
+                                            form += '-' + vars_dependents[index_dependents][0]
+                                            vars_operation.push(vars_dependents[index_dependents][0])
+                                            operations.push([new_unknown,form,data_points[index],vars_operation])
+                                            vars_operation = []
+
+                                        }                                        
+
+                                    }                              
+
+                                   
+                                }     
+
+                                // Encontrando las incognitas
+
+                                for(var index_vars_dependents in vars_dependents){
+
+                                    vars_array = vars_dependents[index_vars_dependents][1].match(match)
+                                    exist = vars_array.indexOf(var_clicked)
+                                    console.log('1 var')
+                                    console.log(vars_dependents[index_vars_dependents][1])
+
+                                    if(exist > -1){
+                                        console.log('2 entró')
+                                        for(var index_vars_array in vars_array){
+
+                                            if(vars_array[index_vars_array] != var_clicked){
+
+                                                console.log('3 es incognita')
+                                                console.log(vars_array[index_vars_array])
+
+                                                if(unknow.indexOf(vars_array[index_vars_array]) == -1)
+                                                    unknow.push(vars_array[index_vars_array])
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                vars_operation = []
+                                
+                                
+                                for(var index_dependents in vars_dependents){
+                                    
+                                    exist = vars_selected.indexOf(vars_dependents[index_dependents][0])
+                                    console.log('1 - la variable')
+                                    console.log(vars_dependents[index_dependents][0])
+
+                                        if(exist > -1){
+
+                                            vars_array = vars_dependents[index_dependents][1].match(match)
+                                            form = vars_dependents[index_dependents][1]
+
+                                        if(vars_array.indexOf(var_clicked) == -1){
+
+                                            console.log('2 - No está la que se movió')
+                                            console.log(form)
+
+                                            for(var index_vars_array in vars_array){
+                                                console.log('arreglo de incognitas')
+                                                console.log(unknow)
+                                                exist2 = unknow.indexOf(vars_array[index_vars_array])
+                                                console.log('valor de exist2')
+                                                console.log(exist2)
+
+                                                if(exist2 > -1){
+                                                    console.log('no es incognita')
+
+                                                    vars_operation.push(vars_array[index_vars_array])
+                                                     
+                                                }else{
+                                                    console.log('es incognita')
+                                                    cont_unknow++
+                                                    console.log(matrix[vars_array[index_vars_array]][data_points[index]])
+                                                    form = form.replace(new RegExp(vars_array[index_vars_array],'gi'),'x')
+                                                    new_unknown = vars_array[index_vars_array]
+                                                    unknow.push(vars_array[index_vars_array])
+                                                    console.log(form)
+                                                }
+
+                                            }
+                                            
+                                            
+                                            form += '-' + vars_dependents[index_dependents][0]
+                                            if(cont_unknow <= 1){
+                                                vars_operation.push(vars_dependents[index_dependents][0])
+                                                operations.push([new_unknown,form,data_points[index],vars_operation])
+                                            }
+                                              
+                                            vars_operation = []
+                                            cont_unknow = 0
+                                            //calculate()                                         
+
+                                        }                                       
+
+                                    }                                    
+
+                                }// fin del for 
+
+
+                                console.log('Antes de ir a python')
+                                console.log(operations)
+                                if(operations.length>0)
+                                    calc_keeping_metrics()
+                                else{
+                                    recalculate(data_points[index])
+                                    sessionStorage.setItem('vars_dependents',JSON.stringify(vars_dependents))
+                                    sessionStorage.setItem('matrix',JSON.stringify(matrix))
+                                    location.reload()
+                                }
+
+                                
+                            })                            
+                            
+
+                            
+                        }
+                        }
+                }
+                
+                el = document.querySelector("canvas[id='chart" + index_chart + "']");
+                window.test = new Chart(el.getContext('2d'), opt);
+                datasets = []
+                variable = []
+                max = 0
+            }
+
+            $('#reset').on('click',function(){
+                
+                matrix = aux_matrix
+                sessionStorage.setItem('vars_dependents',JSON.stringify(vars_dependents))
+                sessionStorage.setItem('matrix',JSON.stringify(matrix))
+                location.reload()
+
+            })
+        });    
+    </script>
+
+</body>
+
+</html>

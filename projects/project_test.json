@@ -1,0 +1,36 @@
+{
+
+    "vars":{
+
+        "var1":"var2+max(var3)",
+        "var2":"var1",
+        "var3":"var1+var2"
+
+    },
+
+    "matrix":[{
+        "dataPoint_1" : {
+            "var1":0,
+            "var2":1,
+            "var3":2
+        },
+        "dataPoint_2" : {
+            "var1":0,
+            "var2":1,
+            "var3":2
+        },
+        "dataPoint_3" : {
+            "var1":0,
+            "var2":1,
+            "var3":2
+        }
+    }],
+
+    "charts":[{
+        "chart_1":{
+            "type":0, 
+            "relations":"var1,var2"
+        } 
+    }]
+
+}
