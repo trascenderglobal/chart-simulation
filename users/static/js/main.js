@@ -13,6 +13,7 @@ var colors = [
     'rgb(148,138,84)',
     'rgb(29,27,16)'
 ]
+// In the "dependent variable" view it displays the options when creating a new one
 function countermore(){ 
    if(i < 5){
     i = i + 1; 
@@ -57,6 +58,7 @@ function countermore(){
     document.querySelector('#select-dependent-variable' + cant.value).setAttribute('placeholder','$awsdasd');
    }
 }
+// In the "dependent variable" view it deletes an already created variable
 function counterless(){ 
     if(i>0){
         i = i - 1; 
@@ -91,5 +93,5 @@ function save_charts(){
     
     console.log(charts)
     sessionStorage.setItem('charts',JSON.stringify(charts))
-    window.location = 'http://localhost:8000/api/upload_new_data/'
+    window.location = 'https://chart-simulation.herokuapp.com/api/upload_new_data/'
 }

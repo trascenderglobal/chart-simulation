@@ -22,12 +22,26 @@
 
 <body class="bg-dark">
 
-  <div class="container">
+  <div class="container-fluid"> 
     <div class="mx-auto mt-5 select-chart-student">
       <div class="col-1 col-white">
-            <button class="btn img-cog">
-                <img src="/static/img/cog.png" alt="" class="img-fluid">    
-            </button>
+        <div class="dropdown">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="/static/img/cog.png" alt="" class="img-fluid"> 
+          </button>
+          <div class="dropdown-menu">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Decimals
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">0</a>
+                <a class="dropdown-item" href="#">1</a>
+                <a class="dropdown-item" href="#">2</a>
+            </div>
+            <!-- <a class="dropdown-item" href="#">Config 2</a>
+            <a class="dropdown-item" href="#">Config 3</a> -->
+          </div>
+        </div>
             <a class="btn img-logout" href="{% url "login" %}">  
                 <img src="/static/img/logout.png" alt="" class="img-fluid">   
             </a>
@@ -41,7 +55,7 @@
 </a></p>
                 <div class="table-upload table-responsive" id="table-upload">                
                 </div>
-                <div class="card-button-upload-data"><a type="button" class="btn btn-primary button-upload-data" href="{% url "upload" %}">Browse and upload your data</a></div>
+                <div class="card-button-upload-data"><a type="button" class="btn btn-primary btn-sm button-upload-data" href="{% url "upload" %}">Browse and upload your data</a></div>
             </div>
             <div class="col-4 variables">
                     <div class="dependent-variables">
